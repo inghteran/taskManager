@@ -1,0 +1,142 @@
+/* Centrado del cuerpo de la página */
+body {
+  background-color: #f1f5f9;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Tarjeta contenedora principal */
+.app-container {
+  background: white;
+  width: 100%;
+  max-width: 450px;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+/* Input y formulario */
+input[type="text"] {
+  width: 65%;
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+input[type="text"]:focus {
+  border-color: #6366f1;
+}
+
+button {
+  padding: 12px 18px;
+  background-color: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover {
+  background-color: #4f46e5;
+}
+
+/* Lista de tareas */
+.task-list {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Tarjeta individual de tarea */
+.task-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+.task-card:hover {
+  background: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+.task-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.task-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.task-text {
+  font-weight: 500;
+  color: #334155;
+}
+
+/* Estilo obligatorio para tareas completadas */
+.task-card.completed {
+  opacity: 0.5;
+  background: #f1f5f9;
+}
+.task-card.completed .task-text {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+/* Botón de eliminar interno */
+.delete-btn {
+  background-color: #ef4444;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+}
+.delete-btn:hover {
+  background-color: #dc2626;
+}
+
+/* Estado Vacío */
+.empty-state-container {
+  padding: 20px;
+  background: #f0fdf4;
+  border: 1px dashed #22c55e;
+  border-radius: 12px;
+  margin-top: 25px;
+}
+.empty-state-text {
+  color: #166534;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Footer / Contadores */
+.app-footer {
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+}
+.footer-stat span {
+  color: #1e293b;
+}
+.stat-done { color: #10b981 !important; }
+.stat-pending { color: #f59e0b !important; }
