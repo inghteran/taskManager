@@ -9,4 +9,4 @@ Aplicación web para la gestión de tareas con frontend en React (Vite) y backen
 ```bash
 git clone [https://github.com/inghteran/taskManager.git](https://github.com/inghteran/taskManager.git)
 cd taskManager
-npm install
+npm install# prueba de proteccion
