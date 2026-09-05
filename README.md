@@ -11,3 +11,6 @@ git clone [https://github.com/inghteran/taskManager.git](https://github.com/ingh
 cd taskManager
 npm install# prueba de proteccion
 # prueba de proteccion
+
+##Contribuciones
+Proyecto desarrollado para las prácticas de DevOps y CI/CD.
