@@ -2,7 +2,7 @@
 
 Aplicación web para la gestión de tareas con frontend en React (Vite) y backend en Node.js.
 
-<!-- BADGE_CI -->
+![CI](https://github.com/inghteran/taskManager/actions/workflows/ci.yml/badge.svg)
 
 ## 🚀 Instalación local
 
