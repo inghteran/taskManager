@@ -1,6 +1,8 @@
 import TaskCard from "./TaskCard";
 import EmptyState from "./EmptyState"; 
 
+const variableInutil = "Error";
+
 type Task = {
   id: number;
   text: string;
