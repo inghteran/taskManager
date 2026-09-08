@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
-    "lint": "echo \"No linting required for backend\""
+    "lint": "echo \"No linting required for backend\"",
+    "build": "echo \"No build required for backend\""
   },
   "keywords": [],
   "author": "",
