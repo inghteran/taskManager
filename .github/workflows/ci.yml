@@ -34,7 +34,7 @@ jobs:
       - name: Instalar Railway CLI
         run: npm install -g @railway/cli
       - name: Desplegar a Railway (staging)
-        run: railway up --service taskManager --environment production
+        run: railway up --service taskManager
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
   
