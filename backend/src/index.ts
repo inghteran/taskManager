@@ -15,6 +15,8 @@ app.use(express.json()); // Habilitamos el parseo de JSON en las solicitudes ent
 // PRISMA CHANGE: Create the connection to PostgreSQL through Prisma
 const prisma = new PrismaClient();
 
+const apiKey = 'sk_test_FALSO123456789'; // TODO: mover a variable de entorno
+
 //app.use(express.json());
 /*
 type Task = {
