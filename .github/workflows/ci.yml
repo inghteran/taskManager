@@ -8,7 +8,7 @@ on:
 
 jobs:
   pruebas:
-    name: Pruebas con variables seguras
+    name: Pruebas Backend con variables seguras
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -24,20 +24,38 @@ jobs:
       - run: npm ci
       - run: npm run test
 
-  deploy-staging:
-    name: Deploy a Staging
-    needs: [pruebas, migraciones] # Ajusta según los nombres reales de tus jobs anteriores
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  pruebas-frontend:
+    name: Pruebas unitarias y cobertura Frontend
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
     steps:
       - uses: actions/checkout@v4
-      - name: Instalar Railway CLI
-        run: npm install -g @railway/cli
-      - name: Desplegar a Railway (staging)
-        run: railway up --service taskManager
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-  
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+      - run: npm ci
+      - run: npx vitest run --coverage
+
+  e2e:
+    name: Pruebas E2E Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
 
   migraciones:
     name: Migraciones y Seeds
@@ -71,3 +89,16 @@ jobs:
       - run: npm ci
       - run: npx prisma migrate deploy
 
+  deploy-staging:
+    name: Deploy a Staging
+    needs: [pruebas, migraciones, pruebas-frontend, e2e]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar Railway CLI
+        run: npm install -g @railway/cli
+      - name: Desplegar a Railway (staging)
+        run: railway up --service taskManager
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
