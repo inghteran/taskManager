@@ -1,21 +1,18 @@
-import express from "express";
-import cors from "cors";
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express = require("express");
+const cors = require("cors");
+// PRISMA CHANGE: Import Prisma Client
+const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const app = express();
 const PORT = 3000;
-
 app.use(cors()); // Habilitamos CORS para permitir solicitudes desde el frontend
 app.use(express.json()); // Habilitamos el parseo de JSON en las solicitudes entrantes
-
 // PRISMA CHANGE: Create the connection to PostgreSQL through Prisma
 const prisma = new PrismaClient();
-
 const apiKey = 'sk_test_FALSO123456789'; // TODO: mover a variable de entorno
-
 //app.use(express.json());
 /*
 type Task = {
@@ -32,7 +29,6 @@ let tasks: Task[] = [
   { id: 3, text: "Probar rutas del backend", completed: false }
 ];
 */
-
 /*
 app.post("/login", (req: any, res: any) => {
     const { email, password } = req.body || {};
@@ -56,11 +52,9 @@ app.post("/login", (req: any, res: any) => {
     });
 });
 */
-
-
 // AUTH: Login now checks real users from PostgreSQL.
 // AUTH: bcrypt.compare checks the typed password against the saved hash.
-app.post("/login", async (req: any, res: any) => {
+app.post("/login", async (req, res) => {
     const { email, password } = req.body || {};
     if (!email || !password) {
         return res.status(400).json({
@@ -81,11 +75,7 @@ app.post("/login", async (req: any, res: any) => {
             message: "Invalid credentials"
         });
     }
-    const token = jwt.sign(
-        { id: user.id, email: user.email },
-        "secret_key",
-        { expiresIn: "1h" }
-    );
+    const token = jwt.sign({ id: user.id, email: user.email }, "secret_key", { expiresIn: "1h" });
     res.json({
         message: "Login successful",
         token: token,
@@ -96,59 +86,45 @@ app.post("/login", async (req: any, res: any) => {
         }
     });
 });
-
-
-
-
 // 5. Crear ruta POST /register - ¡AQUÍ LO PEGAS!
-app.post("/register", async (req: any, res: any) => {
-  const { name, email, password } = req.body || {};
-
-  if (!name || !email || !password) {
-    return res.status(400).json({
-      message: "Name, email and password are required"
-    });
-  }
-
-  // PRISMA: Busca si el usuario ya existe en la base de datos
-  const existingUser = await prisma.user.findUnique({
-    where: { email: email }
-  });
-
-  if (existingUser) {
-    return res.status(400).json({
-      message: "User already exists"
-    });
-  }
-
-  // BCRYPTJS: Encriptamos la contraseña antes de guardarla
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  // PRISMA: Crea el nuevo registro en PostgreSQL
-  const newUser = await prisma.user.create({
-    data: {
-      name: name,
-      email: email,
-      password: hashedPassword
+app.post("/register", async (req, res) => {
+    const { name, email, password } = req.body || {};
+    if (!name || !email || !password) {
+        return res.status(400).json({
+            message: "Name, email and password are required"
+        });
     }
-  });
-
-  return res.status(201).json({
-    message: "User registered successfully",
-    user: {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email
+    // PRISMA: Busca si el usuario ya existe en la base de datos
+    const existingUser = await prisma.user.findUnique({
+        where: { email: email }
+    });
+    if (existingUser) {
+        return res.status(400).json({
+            message: "User already exists"
+        });
     }
-  });
+    // BCRYPTJS: Encriptamos la contraseña antes de guardarla
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // PRISMA: Crea el nuevo registro en PostgreSQL
+    const newUser = await prisma.user.create({
+        data: {
+            name: name,
+            email: email,
+            password: hashedPassword
+        }
+    });
+    return res.status(201).json({
+        message: "User registered successfully",
+        user: {
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email
+        }
+    });
 });
-
-
-
-
 // NEW JWT CHANGE: This is a protected route.
 // NEW JWT CHANGE: The user must send a valid token to access this route.
-app.get("/profile", (req: any, res: any) => {
+app.get("/profile", (req, res) => {
     // NEW JWT CHANGE: The token is expected in the Authorization header.
     const authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -166,24 +142,21 @@ app.get("/profile", (req: any, res: any) => {
             message: "Protected profile data",
             user: decoded
         });
-    } catch (error) {
+    }
+    catch (error) {
         res.status(401).json({
             message: "Invalid token"
         });
     }
 });
-
-
-app.get("/", (req: any, res: any) => {
-  res.send("Backend is working!");
+app.get("/", (req, res) => {
+    res.send("Backend is working!");
 });
-
 // PRISMA CHANGE: GET /tasks now reads from PostgreSQL instead of the array
-app.get("/tasks", async (req: any, res: any) => {
-  const tasksFromDatabase = await prisma.task.findMany();
-  res.json(tasksFromDatabase);
+app.get("/tasks", async (req, res) => {
+    const tasksFromDatabase = await prisma.task.findMany();
+    res.json(tasksFromDatabase);
 });
-
 /// metodo anterior
 /*
 app.post("/tasks", (req: any, res: any) => {
@@ -198,70 +171,56 @@ app.post("/tasks", (req: any, res: any) => {
   res.status(201).json(newTask);
 });
 */
-
 // 2. POST /tasks - Crea una nueva tarea directamente en PostgreSQL
-app.post("/tasks", async (req: any, res: any) => {
-  const { text } = req.body || {};
-
-  if (!text || text.trim() === "") {
-    return res.status(400).json({ message: "Task text is required" });
-  }
-
-  // PRISMA: Reemplazamos el .push() por un .create()
-  const newTask = await prisma.task.create({
-    data: {
-      text: text,
-      completed: false
+app.post("/tasks", async (req, res) => {
+    const { text } = req.body || {};
+    if (!text || text.trim() === "") {
+        return res.status(400).json({ message: "Task text is required" });
     }
-  });
-
-  res.status(201).json(newTask);
-});
-
-// 3. PUT /tasks/:id - Cambia el estado de completado en PostgreSQL
-app.put("/tasks/:id", async (req: any, res: any) => {
-  const id = Number(req.params.id);
-
-  // Primero buscamos la tarea para saber cuál es su estado 'completed' actual
-  const task = await prisma.task.findUnique({
-    where: { id: id }
-  });
-
-  if (!task) {
-    return res.status(404).json({ message: "Task not found" });
-  }
-
-  // PRISMA: Actualizamos la tarea invirtiendo el valor de 'completed'
-  const updatedTask = await prisma.task.update({
-    where: { id: id },
-    data: { completed: !task.completed }
-  });
-
-  res.json(updatedTask);
-});
-
-// 4. DELETE /tasks/:id - Elimina de forma permanente la tarea de PostgreSQL
-app.delete("/tasks/:id", async (req: any, res: any) => {
-  const id = Number(req.params.id);
-
-  try {
-    // PRISMA: Intentamos borrar directamente usando el ID
-    await prisma.task.delete({
-      where: { id: id }
+    // PRISMA: Reemplazamos el .push() por un .create()
+    const newTask = await prisma.task.create({
+        data: {
+            text: text,
+            completed: false
+        }
     });
-    res.status(204).send();
-  } catch (error) {
-    // Si Prisma no encuentra el ID, lanzará un error que atrapamos aquí
-    res.status(404).json({ message: "Task not found" });
-  }
+    res.status(201).json(newTask);
 });
-
+// 3. PUT /tasks/:id - Cambia el estado de completado en PostgreSQL
+app.put("/tasks/:id", async (req, res) => {
+    const id = Number(req.params.id);
+    // Primero buscamos la tarea para saber cuál es su estado 'completed' actual
+    const task = await prisma.task.findUnique({
+        where: { id: id }
+    });
+    if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+    }
+    // PRISMA: Actualizamos la tarea invirtiendo el valor de 'completed'
+    const updatedTask = await prisma.task.update({
+        where: { id: id },
+        data: { completed: !task.completed }
+    });
+    res.json(updatedTask);
+});
+// 4. DELETE /tasks/:id - Elimina de forma permanente la tarea de PostgreSQL
+app.delete("/tasks/:id", async (req, res) => {
+    const id = Number(req.params.id);
+    try {
+        // PRISMA: Intentamos borrar directamente usando el ID
+        await prisma.task.delete({
+            where: { id: id }
+        });
+        res.status(204).send();
+    }
+    catch (error) {
+        // Si Prisma no encuentra el ID, lanzará un error que atrapamos aquí
+        res.status(404).json({ message: "Task not found" });
+    }
+});
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });
-
-
-
 /// remplazamos el metodo anterior
 /*
 app.put("/tasks/:id", (req: any, res: any) => {
@@ -291,4 +250,5 @@ app.delete("/tasks/:id", (req: any, res: any) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-*/
+*/ 
+//# sourceMappingURL=index.js.map

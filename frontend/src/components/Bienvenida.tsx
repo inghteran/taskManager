@@ -28,7 +28,7 @@ export default function Bienvenida({ onLogin }: { onLogin?: () => void }) {
       <form onSubmit={handleSubmit}>
         <input
           type="email"
-          placeholder="Correo electrónico"
+          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
