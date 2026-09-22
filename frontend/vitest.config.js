@@ -4,14 +4,10 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/test/setup.js',
+    setupFiles: './src/test/setup.ts',
     exclude: ['**/node_modules/**', '**/e2e/**'],
-    pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
+    pool: 'threads',
+    fileParallelism: false,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
