@@ -2,8 +2,11 @@ import { test, expect } from '@playwright/test';
 
 test('un usuario puede crear una tarea y verla en la lista', async ({ page }) => {
   // 1. Ir a la aplicación
-  await page.goto('http://localhost:5173/');
-
+  // await page.goto('http://localhost:5173/');
+  //
+  await page.goto('/')
+  await expect(page).toHaveTitle(/Task/i)
+  //
   // 2. Detectar si estamos en la pantalla de Login
   const inputs = page.locator('input');
   await expect(inputs.first()).toBeVisible({ timeout: 10000 });

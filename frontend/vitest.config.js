@@ -6,6 +6,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.js',
     exclude: ['**/node_modules/**', '**/e2e/**'],
+    pool: 'forks',
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
