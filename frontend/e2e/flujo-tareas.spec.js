@@ -1,70 +1,39 @@
 import { test, expect } from '@playwright/test';
 
 test('un usuario puede crear una tarea y verla en la lista', async ({ page }) => {
-  // 1. Interceptar solo llamadas de red Fetch/XHR (ignora archivos JS/TSX de React)
-  await page.route('**/*', async (route) => {
-    const req = route.request();
-    const type = req.resourceType();
-    const url = req.url();
-
-    // Si NO es una petición de datos (Fetch/XHR), dejar que Vite sirva el archivo normal
-    if (type !== 'fetch' && type !== 'xhr') {
-      return route.continue();
-    }
-
-    // Interceptar Login
-    if (url.includes('login')) {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ token: 'fake-jwt-token' }),
-      });
-    }
-
-    // Interceptar Tareas en el Backend
-    if (url.includes('tasks')) {
-      if (req.method() === 'GET') {
-        return route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify([]),
-        });
-      }
-      if (req.method() === 'POST') {
-        const postData = req.postDataJSON() || {};
-        return route.fulfill({
-          status: 201,
-          contentType: 'application/json',
-          body: JSON.stringify({ id: 1, text: postData.text || 'Comprar pan', completed: false }),
-        });
-      }
-    }
-
-    return route.continue();
-  });
-
-  // 2. Cargar la página
+  // 1. Ir a la aplicación
   await page.goto('http://localhost:5173/');
 
-  // 3. Detectar vista activa
-  const firstInput = page.locator('input').first();
-  await expect(firstInput).toBeVisible({ timeout: 10000 });
+  // 2. Detectar si estamos en la pantalla de Login
+  const inputs = page.locator('input');
+  await expect(inputs.first()).toBeVisible({ timeout: 10000 });
 
-  const inputCount = await page.locator('input').count();
+  if ((await inputs.count()) >= 2) {
+    // Llenar correo y contraseña
+    await inputs.nth(0).fill('test@example.com');
+    await inputs.nth(1).fill('password123');
+    
+    // Hacer clic específicamente en el botón del formulario de Login (Submit)
+    await page.locator('form button, button[type="submit"]').first().click();
 
-  // Si hay 2 o más inputs, estamos en el Login
-  if (inputCount >= 2) {
-    await page.locator('input').nth(0).fill('usuario@test.com');
-    await page.locator('input').nth(1).fill('123456');
-    await page.locator('button').first().click();
+    // Esperar a que la sesión inicie y aparezca la interfaz principal
+    await expect(page.getByText('Cerrar Sesión')).toBeVisible({ timeout: 10000 });
   }
 
-  // 4. Crear la Tarea
-  const taskInput = page.locator('input').first();
-  await expect(taskInput).toBeVisible({ timeout: 10000 });
+  // 3. Crear la Tarea
+  // Seleccionamos el campo de texto de la tarea
+  const taskInput = page.locator('input[type="text"]').last();
   await taskInput.fill('Comprar pan');
-  await page.locator('button').first().click();
 
-  // 5. Confirmar que aparece en pantalla
+  // Hacemos clic en el botón "Agregar" (o submit de la tarea), NO en Cerrar Sesión
+  const addButton = page.getByRole('button', { name: /agregar|crear|\+/i });
+  if (await addButton.isVisible()) {
+    await addButton.click();
+  } else {
+    // Si no tiene texto "Agregar", hace clic en el botón junto al input
+    await taskInput.locator('..').locator('button').click();
+  }
+
+  // 4. Confirmar que la tarea aparece en la lista
   await expect(page.getByText('Comprar pan')).toBeVisible({ timeout: 10000 });
 });

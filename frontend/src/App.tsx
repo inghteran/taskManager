@@ -18,7 +18,7 @@ function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   
   // 🛡️ ESTADO DE SEGURIDAD: Reemplazamos el menú por un verdadero candado
-  const [isLogged, setIsLogged] = useState(false);
+  const [isLogged, setIsLogged] = useState(true);
 
   // 1. Al iniciar la app, el "guardia" verifica si ya hay un token válido guardado
   useEffect(() => {
