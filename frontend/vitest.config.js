@@ -1,4 +1,4 @@
- import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
@@ -6,11 +6,10 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.js',
     exclude: ['**/node_modules/**', '**/e2e/**'],
-    pool: 'threads',
+    pool: 'forks',
     poolOptions: {
-      threads: {
-        singleThread: true,
-        isolate: false,
+      forks: {
+        singleFork: true,
       },
     },
     coverage: {
