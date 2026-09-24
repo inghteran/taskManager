@@ -5,7 +5,7 @@ describe('esCorreoValido', () => {
   it('acepta un correo con formato válido', () => {
     const correo = 'ana@ejemplo.com';
     const resultado = esCorreoValido(correo);
-    expect(resultado).toBe(false);
+    expect(resultado).toBe(true);
   });
 
   it('rechaza un correo sin arroba', () => {
