@@ -21,6 +21,8 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
+    pool: 'threads',
+   
     exclude: ['**/node_modules/**', '**/e2e/**'],
     execArgv: ['--require', path.resolve(__dirname, './patch.js')],
     coverage: {
