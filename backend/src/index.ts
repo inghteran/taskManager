@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors()); // Habilitamos CORS para permitir solicitudes desde el frontend
 app.use(express.json()); // Habilitamos el parseo de JSON en las solicitudes entrantes
@@ -15,48 +15,6 @@ app.use(express.json()); // Habilitamos el parseo de JSON en las solicitudes ent
 const prisma = new PrismaClient();
 
 const apiKey = 'sk_test_FALSO123456789'; // TODO: mover a variable de entorno
-
-//app.use(express.json());
-/*
-type Task = {
-  id: number;
-  text: string;
-  completed: boolean;
-};
-
-// This array is still here because POST, PUT, and DELETE are not connected to Prisma yet.
-// PRISMA CHANGE: GET /tasks will no longer use this array.
-let tasks: Task[] = [
-  { id: 1, text: "Estudiar Node.js", completed: false },
-  { id: 2, text: "Crear servidor Express", completed: true },
-  { id: 3, text: "Probar rutas del backend", completed: false }
-];
-*/
-
-/*
-app.post("/login", (req: any, res: any) => {
-    const { email, password } = req.body || {};
-    if (email === "admin@test.com" && password === "123456") {
-        // JWT: If the credentials are correct, we create a token.
-        const token = jwt.sign(
-            // JWT: This is the information stored inside the token.
-            { email: email },
-            // JWT: This secret is used to sign the token.
-            "secret_key",
-            // JWT: The token will expire in 1 hour.
-            { expiresIn: "1h" }
-        );
-        return res.json({
-            message: "Login successful",
-            token: token
-        });
-    }
-    res.status(401).json({
-        message: "Invalid credentials"
-    });
-});
-*/
-
 
 // AUTH: Login now checks real users from PostgreSQL.
 // AUTH: bcrypt.compare checks the typed password against the saved hash.
