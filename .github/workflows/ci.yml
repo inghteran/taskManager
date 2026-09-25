@@ -3,16 +3,26 @@ name: CI Pipeline
 on:
   push:
     branches: [ main, "feature/**" ]
+
   pull_request:
     branches: [ main ]
+
+  workflow_dispatch:
+    inputs:
+      confirmacion:
+        description: 'Escribe DEPLOY para confirmar el despliegue a producción'
+        required: true
+        default: ''
 
 jobs:
   pruebas:
     name: Pruebas Backend con variables seguras
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: ./backend
+
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
@@ -109,9 +119,32 @@ jobs:
   deploy-staging:
     name: Deploy a Staging
     needs: [pruebas, migraciones, pruebas-frontend, e2e]
+
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
     runs-on: ubuntu-latest
 
     steps:
       - name: Railway Auto Deploy
-        run: echo "Railway realiza el despliegue automáticamente desde GitHub."
+        run: |
+          echo "================================="
+          echo "DESPLIEGUE AUTOMATICO A STAGING"
+          echo "================================="
+
+  deploy-production:
+    name: Deploy a Producción (manual)
+
+    needs: [pruebas, migraciones, pruebas-frontend, e2e]
+
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.confirmacion == 'DEPLOY'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Despliegue manual aprobado
+        run: |
+          echo "================================="
+          echo "DESPLIEGUE A PRODUCCION APROBADO"
+          echo "================================="
