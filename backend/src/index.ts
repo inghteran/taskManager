@@ -214,6 +214,13 @@ app.delete("/tasks/:id", async (req: any, res: any) => {
   }
 });
 
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
+throw new Error("Fallo Simulado");
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
