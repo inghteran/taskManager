@@ -7,7 +7,7 @@ export default function Bienvenida({ onLogin }: { onLogin?: () => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:3000/login', {
+      const res = await fetch('https://taskmanager-staging-5e4f.up.railway.app/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

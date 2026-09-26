@@ -34,7 +34,7 @@ function App() {
 
     const fetchTasks = async () => {
       try {
-        const response = await fetch("http://localhost:3000/tasks");
+        const response = await fetch("https://taskmanager-staging-5e4f.up.railway.app/tasks");
         const data = await response.json();
         setTasks(data);
       } catch (error) {
@@ -47,7 +47,7 @@ function App() {
   // --- TUS FUNCIONES DEL GESTOR (Se quedan exactamente igual) ---
   const addTask = async (text: string) => {
     try {
-      const response = await fetch("http://localhost:3000/tasks", {
+      const response = await fetch("https://taskmanager-staging-5e4f.up.railway.app/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: text })
@@ -60,7 +60,7 @@ function App() {
   };
 
   const deleteTask = (id: number) => {
-    fetch(`http://localhost:3000/tasks/${id}`, { method: "DELETE" })
+    fetch(`https://taskmanager-staging-5e4f.up.railway.app/tasks/${id}`, { method: "DELETE" })
       .then((response) => {
         if (!response.ok) throw new Error("Error al eliminar");
         const updatedTasks = tasks.filter((task) => task.id !== id);
